@@ -22,6 +22,9 @@ yaml_files = [
     "benchmarks/linear/systems/twotank/SOS/sos_deg4.yaml",
     "benchmarks/linear/systems/twotank/SOS/sos_deg6.yaml",
     "benchmarks/linear/systems/twotank/SOS/sos_deg8.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg4.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg6.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg8.yaml"
 ]
 
 # Include your synthesis script once
