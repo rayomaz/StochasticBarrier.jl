@@ -18,7 +18,10 @@ yaml_files = [
     "benchmarks/linear/systems/contraction/SOS/sos_deg8.yaml",
     "benchmarks/linear/systems/contraction/SOS/sos_deg12.yaml",
     "benchmarks/linear/systems/contraction/SOS/sos_deg24.yaml",
-    "benchmarks/linear/systems/contraction/SOS/sos_deg30.yaml"
+    "benchmarks/linear/systems/contraction/SOS/sos_deg30.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg4.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg6.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg8.yaml",
 ]
 
 # Include your synthesis script once
