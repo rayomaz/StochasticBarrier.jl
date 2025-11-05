@@ -69,7 +69,7 @@ if __name__ == '__main__':
         't': 10,
         'noise_type': "normal",
         'optimize': True,
-        'solver': "mosek",
+        'solver': "cvxpy",
         'confidence': None,
         'gam': None,
         'lam': 10,
