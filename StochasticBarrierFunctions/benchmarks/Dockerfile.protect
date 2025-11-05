@@ -1,0 +1,43 @@
+# ==============================================
+# Dockerfile.ProTECT
+# ==============================================
+
+FROM python:3.10-slim
+
+# --- System dependencies ---
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git curl findutils sed build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Set working directory ---
+WORKDIR /app
+
+# --- Clone PRoTECT repository ---
+RUN git clone --depth 1 https://github.com/Kiguli/PRoTECT.git
+
+# --- Copy local experiments into PRoTECT ---
+COPY protect_benchmarks/experiments/ /app/PRoTECT/experiments/
+
+# --- Copy your run script ---
+COPY protect_benchmarks/run_protect.sh /app/PRoTECT/run_protect.sh
+RUN chmod +x /app/PRoTECT/run_protect.sh
+
+# --- Replace solver 'mosek' with 'cvxopt' (optional) ---
+RUN find /app/PRoTECT/ex -type f -exec sed -i 's/mosek/cvxopt/g' {} +
+
+# --- Install Python dependencies ---
+RUN pip install --no-cache-dir -r /app/PRoTECT/requirements.txt && \
+    pip install --no-cache-dir pyyaml cvxopt numpy scipy matplotlib
+
+# --- Add convenient alias for running PRoTECT experiments ---
+RUN echo "alias protectbench='/app/PRoTECT/run_protect.sh'" >> ~/.bashrc
+
+# --- Set PYTHONPATH for PRoTECT imports ---
+ENV PYTHONPATH="/app/PRoTECT/src:$PYTHONPATH"
+
+# --- Default working directory ---
+WORKDIR /app/PRoTECT
+
+# --- Default entrypoint: start bash shell ---
+CMD ["bash"]
