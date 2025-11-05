@@ -29,8 +29,8 @@ if __name__ == '__main__':
     U_unsafe = np.array([U_unsafe1, U_unsafe2])
 
     # State space
-    L_space = np.array([17,17,17])
-    U_space = np.array([29,29,29])
+    L_space = np.array([16,16,16])
+    U_space = np.array([30,30,30])
 
     # ========================= Symbolic Variables =========================
     x = sp.symbols(f'x0:{dim}')  # Create x1, x2, ..., x_degree symbols
