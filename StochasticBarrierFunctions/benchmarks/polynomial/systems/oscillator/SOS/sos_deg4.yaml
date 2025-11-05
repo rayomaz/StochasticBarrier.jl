@@ -11,5 +11,5 @@ initial_region:
 barrier_settings:
   barrier_type: "SOS"
   time_horizon: 10
-  barrier_degree: 6
+  barrier_degree: 4
 
