@@ -1,4 +1,4 @@
-%% SOS contraction
+%% SOS: Contraction
 clc; clear all;
 
 deg_list = [2, 4, 8, 12, 24, 30];
