@@ -1,0 +1,17 @@
+system_flag: "polynomial"
+dim: 3
+f: ["0.4 + 0.031*x[2] + 0.929*x[1]", 
+    "0.4 + 0.031*x[3] + 0.898x[2] + 0.031x[1]",
+    "0.4 + 0.031*x[2] + 0.929*x[3]"]
+σ: [0.1, 0.1, 0.1]
+state_space:
+  low: [17.0, 17.0, 17.0]
+  high: [29.0, 29.0, 29.0]
+initial_region:
+  low: [18.0, 18.0, 18.0]
+  high: [19.0, 19.0, 19.0]
+barrier_settings:
+  barrier_type: "SOS"
+  time_horizon: 10
+  barrier_degree: 12
+

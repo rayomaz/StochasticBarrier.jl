@@ -4,17 +4,19 @@ We present *StochasticBarrier.jl*, an open-source Julia-based toolbox for genera
 
 ## Purpose of this code
 This code generates results of the benchmarks presented in Table (1) and Table (2) of the toolbox paper.
-A total of ten case studies are included for showcasing repeatability:
-1.  **Contraction Map: SOS Barrier**
-2.  **Contraction Map: PWC-DUAL Barrier**
-3.  **Contraction Map: PWC-CEGS Barrier**
-4.  **Contraction Map: PWC-GD Barrier**
-5.  **Oscillator: SOS Barrier**
-6.  **Room Temperature: SOS Barrier**
-7.  **Pendulum: SOS Barrier**
-8.  **Contraction Map: PWC-DUAL Barrier**
-9.  **Contraction Map: PWC-CEGS Barrier**
-10. **Contraction Map: PWC-GD Barrier**
+A total of six experiments are included for benchmarking SOS:
+1.  **Contraction Map**
+2.  **Two Tank**
+3.  **Quadrotor**
+4.  **Thermostat**
+5.  **Oscillator**
+6.  **Room Temperature**
+
+A total of four experiments are included for benchmarking PWC:
+1.  **Contraction Map**
+2.  **Quadrotor**
+3.  **Pendulum**
+4.  **Unicycle**
 
 ## Repeat Experiments
 | **`Linux`** | **`Mac OS X`** | **`Windows`** |
@@ -36,34 +38,9 @@ sudo docker run -it --name StochasticBarrier stochastic_barrier
 
 ## Run through bash
 
-Use the following commands to run the optimization case studies through bash.
+Use the following commands to run the benchmarks.
 
 ```sh
-stochasticbarrier contraction_sos           # To run the stochastic contraction map with a SOS barrier
-stochasticbarrier contraction_pwc_dual      # To run the stochastic contraction map with a PWC-DUAL barrier
-stochasticbarrier contraction_pwc_cegs      # To run the stochastic contraction map with a PWC-CEGS barrier
-stochasticbarrier contraction_pwc_gd        # To run the stochastic contraction map with a PWC-GD barrier
+stochasticbarrier sos                  # To run the SOS barrier benchmark
+stochasticbarrier pwc                  # To run the PWC barrier benchmark
 ```
-
-The same commands can be run for other benchmarks: oscillator, roomtemperature, or pendulum.
-
-## Run through Julia
-Use the following commands to run the optimization case studies through Julia
-
-Navigate to *```/StochasticBarrierFunctions```* \
-In terminal call julia and run the following commands:
-1. ```julia
-      using Pkg
-   ```
-2. ```julia 
-      Pkg.activate(".") 
-   ```
-3. ```julia 
-      Pkg.precompile(".") 
-   ```   
-
-To run the Contraction Map for example, use the following command: 
-```julia 
-   yaml_file = "benchmarks/linear/systems/contraction/sos.yaml"; include("benchmarks/barrier_synthesis.jl")
-```
-The same commands can be run for other benchmarks: oscillator, roomtemperature, or pendulum.

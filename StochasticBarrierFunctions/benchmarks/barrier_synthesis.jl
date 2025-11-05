@@ -144,9 +144,6 @@ function call_barrier_method(config, system_type_instance, barrier_type::SOS)
                                                              system, initial_region, obstacle_region; 
                                                              time_horizon=time_horizon)
 
-    # Print results to txt
-    system_flag = config["system_flag"]
-    print_to_txt(system_flag, "SOS", res_sos)
 end
 
 function call_barrier_method(config, system_type_instance, ::PWC)
@@ -195,8 +192,6 @@ function call_barrier_method(config, system_type_instance, ::PWC)
     optimization_type_instance = get_pwc_optimization_type(config["barrier_settings"]["optimization_type"])
     res_pwc = pwc_optimization_call(config, probabilities, initial_region, obstacle_region, optimization_type_instance)
     
-    # Print results to txt
-    print_to_txt(config["system_flag"], "PWC", res_pwc)
 end
 
 function pwc_optimization_call(config, probabilities, initial_region, obstacle_region, barrier_type::DUAL_ALG)
@@ -261,14 +256,3 @@ function get_kwargs(config, barrier_type::GD_ALG)
     time_horizon = get(config["barrier_settings"], "time_horizon", 1) 
     return num_iterations, initial_lr, decay, momentum, time_horizon
 end
-
-function print_to_txt(system_flag, barrier_type, res)
-    # Print to txt                                   
-    file_path = "$(system_flag)/results/result.txt"
-    open(file_path, "w") do file
-        show(file, res)
-    end
-end
-
-# Load the system setup from YAML
-barrier_synthesis(yaml_file)

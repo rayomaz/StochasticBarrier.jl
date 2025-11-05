@@ -1,0 +1,15 @@
+system_flag: "linear"
+dim: 2
+A: [[0.90, 0.1], [0.0, 0.90]]
+b: [0.45, -0.3]
+σ: [0.01, 0.01]
+state_space:
+  low: [1.0, 1.0]
+  high: [9.0, 9.0]
+initial_region:
+  low: [2.75, 2.75]
+  high: [3.25, 3.25]
+barrier_settings:
+  barrier_type: "SOS"
+  time_horizon: 10
+  barrier_degree: 6
