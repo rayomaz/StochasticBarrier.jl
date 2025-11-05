@@ -36,8 +36,8 @@ if __name__ == '__main__':
     U_unsafe = np.array([U_unsafe1, U_unsafe2])
 
     # ------------------ State space -----------------------
-    L_space = np.array([-0.5, -1.0, -0.1, -0.1, -0.5, -0.5])
-    U_space = np.array([2.0, 1.0, 0.1, 0.1, 3.0, 1.5])
+    L_space = np.array([-1.0, -2.0, -0.2, -0.2, -1.0, -1.0])
+    U_space = np.array([3.0, 2.0, 0.2, 0.2, 4.0, 2.0])
 
     # ------------------ Initial region --------------------
     L_initial = np.array([-0.01, 0.01, -0.01, 0.01, -0.01, 0.01])
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         't': 10,
         'noise_type': "normal",
         'optimize': True,
-        'solver': "mosek",
+        'solver': "cvxpy",
         'confidence': None,
         'gam': None,
         'lam': 10,

@@ -29,8 +29,8 @@ if __name__ == '__main__':
     U_unsafe = np.array([U_unsafe1,U_unsafe2])
 
     # State space
-    L_space = np.array([-6,-6])
-    U_space = np.array([6,6])
+    L_space = np.array([-7,-7])
+    U_space = np.array([7,7])
 
     # ========================= Symbolic Variables =========================
     x = sp.symbols(f'x0:{dim}')  # Create x1, x2, ..., x_degree symbols
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         't': t,
         'noise_type': NoiseType,
         'optimize': True,
-        'solver': "mosek",
+        'solver': "cvxpy",
         'confidence': None,
         'gam': None,
         'lam': 1000,
