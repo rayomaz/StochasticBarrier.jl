@@ -33,7 +33,7 @@ yaml_files = [
     "benchmarks/polynomial/systems/room/SOS/sos_deg4.yaml",
     "benchmarks/polynomial/systems/room/SOS/sos_deg6.yaml",
     "benchmarks/polynomial/systems/room/SOS/sos_deg8.yaml",
-    "benchmarks/polynomial/systems/room/SOS/sos_deg12.yaml"
+    "benchmarks/polynomial/systems/room/SOS/sos_deg12.yaml",
 
     "benchmarks/linear/systems/quadrotor/SOS/sos_deg2.yaml",
     "benchmarks/linear/systems/quadrotor/SOS/sos_deg4.yaml",
