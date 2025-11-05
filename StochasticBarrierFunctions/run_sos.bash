@@ -18,20 +18,20 @@ julia --project="$JULIA_PROJECT" <<'EOF'
 yaml_files = [
 
     # ---------------------Linear Systems---------------------#
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg2.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg4.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg8.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg12.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg24.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg30.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg2.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg4.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg8.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg12.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg24.yaml",
+    "benchmarks/linear/systems/contraction/SOS/sos_deg30.yaml",
 
-    # "benchmarks/linear/systems/twotank/SOS/sos_deg4.yaml",
-    # "benchmarks/linear/systems/twotank/SOS/sos_deg6.yaml",
-    # "benchmarks/linear/systems/twotank/SOS/sos_deg8.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg4.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg6.yaml",
+    "benchmarks/linear/systems/twotank/SOS/sos_deg8.yaml",
 
-    # "benchmarks/linear/systems/quadrotor/SOS/sos_deg2.yaml",
-    # "benchmarks/linear/systems/quadrotor/SOS/sos_deg4.yaml",
-    # "benchmarks/linear/systems/quadrotor/SOS/sos_deg6.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg2.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg4.yaml",
+    "benchmarks/linear/systems/quadrotor/SOS/sos_deg8.yaml",
 
     #---------------------Polynomial Systems---------------------#
     "benchmarks/polynomial/systems/thermostat/SOS/sos_deg2.yaml",
