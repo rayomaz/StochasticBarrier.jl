@@ -13,12 +13,12 @@ dim = 3
 αₑ = 8e-3
 α  = 6.2e-3
 τ  = 5
-Te = 15
+Te = 10
 R  = 0.10
 
-f = [1 - τ*(α + αₑ)*x[1] + τ*α*x[2] + τ*αₑ*Te;
-     1 - τ*(2*α + αₑ)*x[1] + τ*α*(x[1] + x[3]) + τ*αₑ*Te;
-     1 - τ*(α + αₑ)*x[3] + τ*α*x[2]  + τ*αₑ*Te
+f = [(1 - τ*(α + αₑ))*x[1] + τ*α*x[2] + τ*αₑ*Te;
+     (1 - τ*(2*α + αₑ))*x[2] + τ*α*(x[1] + x[3]) + τ*αₑ*Te;
+     (1 - τ*(α + αₑ))*x[3] + τ*α*x[2]  + τ*αₑ*Te
     ]
 σ = R*ones(dim)
 
@@ -34,6 +34,6 @@ obstacle_region = EmptySet(dim)
 N = 3
 
 # # Optimize: baseline 1 (sos)
-@time res_sos = synthesize_barrier(SumOfSquaresAlgorithm(barrier_degree = 6), system, initial_region, obstacle_region; time_horizon = N)
+@time res_sos = synthesize_barrier(SumOfSquaresAlgorithm(barrier_degree = 4), system, initial_region, obstacle_region; time_horizon = N)
 
 println("Room temperature model verified.")
