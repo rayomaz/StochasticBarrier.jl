@@ -45,10 +45,9 @@ if __name__ == '__main__':
     sigma = np.array([0.01, 0.01])
     mean = np.array([0, 0])
 
-    tau = 0.1
-
-    f1 = (1 - tau) * x[0] + 4.5 * tau + varsigma[0]
-    f2 = tau * x[0] + (1 - tau) * x[1] - 3 * tau + varsigma[1]
+    # Dynamics
+    f1 = 0.90 * x[0] + 0.10 * x[1] + 0.45 + varsigma[0]
+    f2 = 0.90 * x[1] - 0.30 + varsigma[1]
     f = np.array([f1, f2])
 
     # Time horizon
