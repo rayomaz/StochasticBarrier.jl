@@ -30,8 +30,8 @@ if __name__ == '__main__':
     U_unsafe = np.array([U_unsafe1, U_unsafe2])
 
     # State space
-    L_space = np.array([1, 1])
-    U_space = np.array([9, 9])
+    L_space = np.array([0, 0])
+    U_space = np.array([10, 10])
 
     # ========================= Symbolic Variables =========================
     x = sp.symbols(f'x0:{dim}')       # Create x0, x1
