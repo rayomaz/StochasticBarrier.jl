@@ -68,25 +68,39 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     termlist = children(Bsub);
     
     for ii = 1:length(termlist)
-        z1count = 0; z2count = 0; x1count = 0; x2count = 0; EXPz = 0;
-        factored = cell2sym(termlist(ii));
-        factoredterm = factor(factored);
-        
-        for jj = 1:length(factoredterm)
-            if isequaln(factoredterm(jj),z), zcount = zcount + 1; end
-            if isequaln(factoredterm(jj),x1), x1count = x1count + 1; end
-            if isequaln(factoredterm(jj),x2), x2count = x2count + 1; end
+    z1count = 0; z2count = 0; x1count = 0; x2count = 0; EXPz = 0;
+    factored = cell2sym(termlist(ii));
+    factoredterm = factor(factored);
+
+    for jj = 1:length(factoredterm)
+            if isequaln(factoredterm(jj), z1), z1count = z1count + 1; end
+            if isequaln(factoredterm(jj), z2), z2count = z2count + 1; end
+            if isequaln(factoredterm(jj), x1), x1count = x1count + 1; end
+            if isequaln(factoredterm(jj), x2), x2count = x2count + 1; end
         end
-        
-        if zcount == 0
+
+        if mod(z1count, 2) == 1 || mod(z2count, 2) == 1
+            % any odd noise power -> zero expectation
+            EXPz = 0;
+        elseif z1count == 0 && z2count == 0
+            % no noise in the term
             EXPz = factored;
-        elseif mod(zcount,2) == 0
-            EXPz = prod(factoredterm(factoredterm~=z)) * prod(1:2:zcount) * stdvar^zcount;
+        elseif z1count == 0
+            % only z2 present
+            EXPz = prod(factoredterm(factoredterm ~= z2)) * prod(1:2:z2count) * stdvar^z2count;
+        elseif z2count == 0
+            % only z1 present
+            EXPz = prod(factoredterm(factoredterm ~= z1)) * prod(1:2:z1count) * stdvar^z1count;
+        else
+            % both noises present (even powers)
+            EXPz = prod(factoredterm(factoredterm ~= z1 & factoredterm ~= z2)) * ...
+                prod(1:2:z1count) * stdvar^z1count * ...
+                prod(1:2:z2count) * stdvar^z2count;
         end
-        
+
         EXP = EXP + EXPz;
     end
-    
+
     prog = sosineq(prog, -EXP + B/alpha + betasym - sig_x*(2^2 - x1^2 - x2^2));
     
     objfunc = gamsym + betasym;
