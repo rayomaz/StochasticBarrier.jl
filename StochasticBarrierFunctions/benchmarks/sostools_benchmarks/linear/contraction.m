@@ -103,8 +103,10 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
         EXP = EXP + EXPz;
     end
 
-    prog = sosineq(prog, -EXP + B/alpha + betasym - sig_x*(2^2 - x1^2 - x2^2));
-    
+    prog = sosineq(prog, -EXP + B/alpha + betasym ...
+                - sig_x1*(x1 + 1)*(2 - x1) ...
+                - sig_x2*(x2 + 1)*(2 - x2));
+
     objfunc = gamsym + betasym;
     prog = sossetobj(prog, objfunc);
     
