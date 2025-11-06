@@ -27,7 +27,7 @@ end
 function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     alpha = 1; gx = 0.1; N = 10; x0 = [0;0];
     
-    syms z x1 x2 betasym gamsym real
+    syms z1 z2 x1 x2 betasym gamsym real
     EXP = 0;
     
     solver_opt.solver = 'sdpt3';
