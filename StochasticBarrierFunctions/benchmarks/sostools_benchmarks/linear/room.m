@@ -27,7 +27,8 @@ end
 function [Bxpolys, betaval, gam, Ps] = runSOS3D(deg)
     alpha = 1; gx = 0.1; N = 10; x0 = [18;18;18];
     
-    syms z x1 x2 x3 betasym gamsym real
+    % Symbols
+    syms z1 z2 z3 x1 x2 x3 betasym gamsym real
     EXP = 0;
     
     solver_opt.solver = 'sdpt3';
@@ -41,27 +42,25 @@ function [Bxpolys, betaval, gam, Ps] = runSOS3D(deg)
     prog = sosprogram([x1, x2, x3], [betasym, gamsym]);
     Zmon = monomials([x1, x2, x3], 0:deg);
     
-    [prog, B] = sospolyvar(prog, Zmon, 'wscoeff');
-    [prog, sig_u1] = sospolyvar(prog, Zmon);
-    [prog, sig_u2] = sospolyvar(prog, Zmon);
-    [prog, sig_u3] = sospolyvar(prog, Zmon);
-    [prog, sig_x]  = sospolyvar(prog, Zmon);
-    [prog, sig_o1] = sospolyvar(prog, Zmon);
-    [prog, sig_o2] = sospolyvar(prog, Zmon);
-    [prog, sig_o3] = sospolyvar(prog, Zmon);
+    [prog, B]       = sospolyvar(prog, Zmon, 'wscoeff');
+    [prog, sig_u1]  = sospolyvar(prog, Zmon);
+    [prog, sig_u2]  = sospolyvar(prog, Zmon);
+    [prog, sig_u3]  = sospolyvar(prog, Zmon);
+    [prog, sig_x1]  = sospolyvar(prog, Zmon);
+    [prog, sig_x2]  = sospolyvar(prog, Zmon);
+    [prog, sig_x3]  = sospolyvar(prog, Zmon);
+    [prog, sig_o1]  = sospolyvar(prog, Zmon);
+    [prog, sig_o2]  = sospolyvar(prog, Zmon);
+    [prog, sig_o3]  = sospolyvar(prog, Zmon);
     
-    % Basic inequalities
+    % Nonnegativity
     prog = sosineq(prog, betasym);
-    prog = sosineq(prog, sig_u1);
-    prog = sosineq(prog, sig_u2);
-    prog = sosineq(prog, sig_u3);
-    prog = sosineq(prog, sig_x);
-    prog = sosineq(prog, sig_o1);
-    prog = sosineq(prog, sig_o2);
-    prog = sosineq(prog, sig_o3);
+    prog = sosineq(prog, sig_u1); prog = sosineq(prog, sig_u2); prog = sosineq(prog, sig_u3);
+    prog = sosineq(prog, sig_x1); prog = sosineq(prog, sig_x2); prog = sosineq(prog, sig_x3);
+    prog = sosineq(prog, sig_o1); prog = sosineq(prog, sig_o2); prog = sosineq(prog, sig_o3);
     prog = sosineq(prog, B);
     
-    % Unsafe set constraints: x in [17,29]^3
+    % Unsafe set: x notin [17,29]^3
     prog = sosineq(prog, B - sig_u1*(x1 - 17)*(29 - x1) - 1);
     prog = sosineq(prog, B - sig_u2*(x2 - 17)*(29 - x2) - 1);
     prog = sosineq(prog, B - sig_u3*(x3 - 17)*(29 - x3) - 1);
@@ -75,40 +74,43 @@ function [Bxpolys, betaval, gam, Ps] = runSOS3D(deg)
     prog = sosineq(prog, 1 - gamsym - 1e-6);
     
     % Noise substitution
-    stdvar = gx;
-    x1 = fx(1) + z;
-    x2 = fx(2) + z;
-    x3 = fx(3) + z;
+    stdvar1 = gx; stdvar2 = gx; stdvar3 = gx;
+    x1 = fx(1) + z1; x2 = fx(2) + z2; x3 = fx(3) + z3;
     
     Bsub = expand(subs(B));
     clear x1 x2 x3;
     syms x1 x2 x3 real;
     termlist = children(Bsub);
     
-    % Compute expected value
+    % Compute expected value term-by-term
     for ii = 1:length(termlist)
-        zcount = 0; x1count = 0; x2count = 0; x3count = 0; EXPz = 0;
+        z1count = 0; z2count = 0; z3count = 0;
+        EXPz = 0;
         factored = cell2sym(termlist(ii));
         factoredterm = factor(factored);
         
         for jj = 1:length(factoredterm)
-            if isequaln(factoredterm(jj),z), zcount = zcount + 1; end
-            if isequaln(factoredterm(jj),x1), x1count = x1count + 1; end
-            if isequaln(factoredterm(jj),x2), x2count = x2count + 1; end
-            if isequaln(factoredterm(jj),x3), x3count = x3count + 1; end
+            if isequaln(factoredterm(jj), z1), z1count = z1count + 1; end
+            if isequaln(factoredterm(jj), z2), z2count = z2count + 1; end
+            if isequaln(factoredterm(jj), z3), z3count = z3count + 1; end
         end
         
-        if zcount == 0
-            EXPz = factored;
-        elseif mod(zcount,2) == 0
-            EXPz = prod(factoredterm(factoredterm~=z)) * prod(1:2:zcount) * stdvar^zcount;
+        if mod(z1count,2)==1 || mod(z2count,2)==1 || mod(z3count,2)==1
+            EXPz = 0;
+        else
+            nonNoise = factoredterm(~ismember(factoredterm,[z1 z2 z3]));
+            EXPz = prod(nonNoise) * prod(1:2:z1count)*stdvar1^z1count ...
+                                  * prod(1:2:z2count)*stdvar2^z2count ...
+                                  * prod(1:2:z3count)*stdvar3^z3count;
         end
-        
         EXP = EXP + EXPz;
     end
     
-    % Expectation constraint
-    prog = sosineq(prog, -EXP + B/alpha + betasym - sig_x*(29^2 - x1^2 - x2^2 - x3^2));
+    % Hypercube expectation constraint X = [17,29]^3
+    prog = sosineq(prog, -EXP + B/alpha + betasym ...
+        - sig_x1*(x1 - 17)*(29 - x1) ...
+        - sig_x2*(x2 - 17)*(29 - x2) ...
+        - sig_x3*(x3 - 17)*(29 - x3));
     
     % Objective
     objfunc = gamsym + betasym;
