@@ -27,7 +27,8 @@ end
 function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     alpha = 1; gx = 0.01; N = 10; x0 = [0;0];
     
-    syms z x1 x2 betasym gamsym real
+    % declare separate noise variables z1,z2 and x1,x2
+    syms z1 z2 x1 x2 betasym gamsym real
     EXP = 0;
     
     solver_opt.solver = 'sdpt3';
@@ -35,17 +36,20 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     
     prog = sosprogram([x1, x2], [betasym, gamsym]);
     Zmon = monomials([x1, x2], 0:deg);
-    [prog, B] = sospolyvar(prog, Zmon, 'wscoeff');
-    [prog, sig_u1] = sospolyvar(prog, Zmon);
-    [prog, sig_u2] = sospolyvar(prog, Zmon);
-    [prog, sig_x]  = sospolyvar(prog, Zmon);
-    [prog, sig_o1] = sospolyvar(prog, Zmon);
-    [prog, sig_o2] = sospolyvar(prog, Zmon);
+    [prog, B]       = sospolyvar(prog, Zmon, 'wscoeff');
+    [prog, sig_u1]  = sospolyvar(prog, Zmon);
+    [prog, sig_u2]  = sospolyvar(prog, Zmon);
+    [prog, sig_x1]  = sospolyvar(prog, Zmon);   % separate multipliers for box
+    [prog, sig_x2]  = sospolyvar(prog, Zmon);
+    [prog, sig_o1]  = sospolyvar(prog, Zmon);
+    [prog, sig_o2]  = sospolyvar(prog, Zmon);
     
+    % SOS nonnegativity
     prog = sosineq(prog, betasym);
     prog = sosineq(prog, sig_u1);
     prog = sosineq(prog, sig_u2);
-    prog = sosineq(prog, sig_x);
+    prog = sosineq(prog, sig_x1);
+    prog = sosineq(prog, sig_x2);
     prog = sosineq(prog, sig_o1);
     prog = sosineq(prog, B);
     
@@ -58,9 +62,13 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     prog = sosineq(prog, gamsym);
     prog = sosineq(prog, 1 - gamsym - 1e-6);
     
-    stdvar = gx;
-    x1 = fx(1) + z;
-    x2 = fx(2) + z;
+    % separate noise magnitudes (allow different values if desired)
+    stdvar1 = gx;
+    stdvar2 = gx;
+    
+    % substitute independent noises into each axis
+    x1 = fx(1) + z1;
+    x2 = fx(2) + z2;
     
     Bsub = expand(subs(B));
     clear x1 x2;
@@ -68,26 +76,45 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     termlist = children(Bsub);
     
     for ii = 1:length(termlist)
-        zcount = 0; x1count = 0; x2count = 0; EXPz = 0;
+        z1count = 0; z2count = 0; x1count = 0; x2count = 0; EXPz = 0;
         factored = cell2sym(termlist(ii));
         factoredterm = factor(factored);
         
         for jj = 1:length(factoredterm)
-            if isequaln(factoredterm(jj),z), zcount = zcount + 1; end
-            if isequaln(factoredterm(jj),x1), x1count = x1count + 1; end
-            if isequaln(factoredterm(jj),x2), x2count = x2count + 1; end
+            if isequaln(factoredterm(jj), z1), z1count = z1count + 1; end
+            if isequaln(factoredterm(jj), z2), z2count = z2count + 1; end
+            if isequaln(factoredterm(jj), x1), x1count = x1count + 1; end
+            if isequaln(factoredterm(jj), x2), x2count = x2count + 1; end
         end
         
-        if zcount == 0
+        % expectation logic for independent Gaussian-like noises:
+        % odd power on any axis -> zero; otherwise multiply even moments
+        if (mod(z1count,2) == 1) || (mod(z2count,2) == 1)
+            EXPz = 0;
+        elseif (z1count == 0) && (z2count == 0)
             EXPz = factored;
-        elseif mod(zcount,2) == 0
-            EXPz = prod(factoredterm(factoredterm~=z)) * prod(1:2:zcount) * stdvar^zcount;
+        elseif z1count == 0
+            % only z2 present (even)
+            nonNoise = factoredterm(~(factoredterm == z2));
+            EXPz = prod(nonNoise) * prod(1:2:z2count) * stdvar2^z2count;
+        elseif z2count == 0
+            % only z1 present (even)
+            nonNoise = factoredterm(~(factoredterm == z1));
+            EXPz = prod(nonNoise) * prod(1:2:z1count) * stdvar1^z1count;
+        else
+            % both present with even powers
+            nonNoise = factoredterm(~( (factoredterm == z1) | (factoredterm == z2) ));
+            EXPz = prod(nonNoise) * ...
+                   prod(1:2:z1count) * stdvar1^z1count * ...
+                   prod(1:2:z2count) * stdvar2^z2count;
         end
         
         EXP = EXP + EXPz;
     end
     
-    prog = sosineq(prog, -EXP + B/alpha + betasym - sig_x*(2^2 - x1^2 - x2^2));
+    prog = sosineq(prog, -EXP + B/alpha + betasym ...
+        - sig_x1*(x1 - 1)*(9 - x1) ...
+        - sig_x2*(x2 - 1)*(9 - x2));
     
     objfunc = gamsym + betasym;
     prog = sossetobj(prog, objfunc);
