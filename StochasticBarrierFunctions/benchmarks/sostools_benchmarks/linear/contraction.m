@@ -38,14 +38,16 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     [prog, B] = sospolyvar(prog, Zmon, 'wscoeff');
     [prog, sig_u1] = sospolyvar(prog, Zmon);
     [prog, sig_u2] = sospolyvar(prog, Zmon);
-    [prog, sig_x]  = sospolyvar(prog, Zmon);
+    [prog, sig_x1] = sospolyvar(prog, Zmon);
+    [prog, sig_x2] = sospolyvar(prog, Zmon);
     [prog, sig_o1] = sospolyvar(prog, Zmon);
     [prog, sig_o2] = sospolyvar(prog, Zmon);
     
     prog = sosineq(prog, betasym);
     prog = sosineq(prog, sig_u1);
     prog = sosineq(prog, sig_u2);
-    prog = sosineq(prog, sig_x);
+    prog = sosineq(prog, sig_x1);
+    prog = sosineq(prog, sig_x2);
     prog = sosineq(prog, sig_o1);
     prog = sosineq(prog, B);
     
