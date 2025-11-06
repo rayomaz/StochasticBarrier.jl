@@ -27,7 +27,7 @@ end
 function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     alpha = 1; gx = 0.1; N = 10; x0 = [0;0];
     
-    syms z x1 x2 betasym gamsym real
+    syms z1 z2 x1 x2 betasym gamsym real
     EXP = 0;
     
     solver_opt.solver = 'sdpt3';
@@ -38,14 +38,16 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     [prog, B] = sospolyvar(prog, Zmon, 'wscoeff');
     [prog, sig_u1] = sospolyvar(prog, Zmon);
     [prog, sig_u2] = sospolyvar(prog, Zmon);
-    [prog, sig_x]  = sospolyvar(prog, Zmon);
+    [prog, sig_x1] = sospolyvar(prog, Zmon);
+    [prog, sig_x2] = sospolyvar(prog, Zmon);
     [prog, sig_o1] = sospolyvar(prog, Zmon);
     [prog, sig_o2] = sospolyvar(prog, Zmon);
     
     prog = sosineq(prog, betasym);
     prog = sosineq(prog, sig_u1);
     prog = sosineq(prog, sig_u2);
-    prog = sosineq(prog, sig_x);
+    prog = sosineq(prog, sig_x1);
+    prog = sosineq(prog, sig_x2);
     prog = sosineq(prog, sig_o1);
     prog = sosineq(prog, B);
     
@@ -59,8 +61,8 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     prog = sosineq(prog, 1 - gamsym - 1e-6);
     
     stdvar = gx;
-    x1 = fx(1) + z;
-    x2 = fx(2) + z;
+    x1 = fx(1) + z1;
+    x2 = fx(2) + z2;
     
     Bsub = expand(subs(B));
     clear x1 x2;
@@ -68,27 +70,43 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     termlist = children(Bsub);
     
     for ii = 1:length(termlist)
-        zcount = 0; x1count = 0; x2count = 0; EXPz = 0;
-        factored = cell2sym(termlist(ii));
-        factoredterm = factor(factored);
-        
-        for jj = 1:length(factoredterm)
-            if isequaln(factoredterm(jj),z), zcount = zcount + 1; end
-            if isequaln(factoredterm(jj),x1), x1count = x1count + 1; end
-            if isequaln(factoredterm(jj),x2), x2count = x2count + 1; end
+    z1count = 0; z2count = 0; x1count = 0; x2count = 0; EXPz = 0;
+    factored = cell2sym(termlist(ii));
+    factoredterm = factor(factored);
+
+    for jj = 1:length(factoredterm)
+            if isequaln(factoredterm(jj), z1), z1count = z1count + 1; end
+            if isequaln(factoredterm(jj), z2), z2count = z2count + 1; end
+            if isequaln(factoredterm(jj), x1), x1count = x1count + 1; end
+            if isequaln(factoredterm(jj), x2), x2count = x2count + 1; end
         end
-        
-        if zcount == 0
+
+        if mod(z1count, 2) == 1 || mod(z2count, 2) == 1
+            % any odd noise power -> zero expectation
+            EXPz = 0;
+        elseif z1count == 0 && z2count == 0
+            % no noise in the term
             EXPz = factored;
-        elseif mod(zcount,2) == 0
-            EXPz = prod(factoredterm(factoredterm~=z)) * prod(1:2:zcount) * stdvar^zcount;
+        elseif z1count == 0
+            % only z2 present
+            EXPz = prod(factoredterm(factoredterm ~= z2)) * prod(1:2:z2count) * stdvar^z2count;
+        elseif z2count == 0
+            % only z1 present
+            EXPz = prod(factoredterm(factoredterm ~= z1)) * prod(1:2:z1count) * stdvar^z1count;
+        else
+            % both noises present (even powers)
+            EXPz = prod(factoredterm(factoredterm ~= z1 & factoredterm ~= z2)) * ...
+                prod(1:2:z1count) * stdvar^z1count * ...
+                prod(1:2:z2count) * stdvar^z2count;
         end
-        
+
         EXP = EXP + EXPz;
     end
-    
-    prog = sosineq(prog, -EXP + B/alpha + betasym - sig_x*(2^2 - x1^2 - x2^2));
-    
+
+    prog = sosineq(prog, -EXP + B/alpha + betasym ...
+                - sig_x1*(x1 + 1)*(2 - x1) ...
+                - sig_x2*(x2 + 1)*(2 - x2));
+
     objfunc = gamsym + betasym;
     prog = sossetobj(prog, objfunc);
     
