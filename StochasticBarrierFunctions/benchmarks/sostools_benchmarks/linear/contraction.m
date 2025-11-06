@@ -59,8 +59,8 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     prog = sosineq(prog, 1 - gamsym - 1e-6);
     
     stdvar = gx;
-    x1 = fx(1) + z;
-    x2 = fx(2) + z;
+    x1 = fx(1) + z1;
+    x2 = fx(2) + z2;
     
     Bsub = expand(subs(B));
     clear x1 x2;
