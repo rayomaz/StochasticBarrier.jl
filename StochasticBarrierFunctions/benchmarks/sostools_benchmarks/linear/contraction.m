@@ -68,7 +68,7 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     termlist = children(Bsub);
     
     for ii = 1:length(termlist)
-        zcount = 0; x1count = 0; x2count = 0; EXPz = 0;
+        z1count = 0; z2count = 0; x1count = 0; x2count = 0; EXPz = 0;
         factored = cell2sym(termlist(ii));
         factoredterm = factor(factored);
         
