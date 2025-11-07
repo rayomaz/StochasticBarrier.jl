@@ -1,7 +1,6 @@
 FROM julia:1.11.5
 
-
-# --- PART 1: StochasticBarrier.jl setup ---
+# --- StochasticBarrier.jl setup ---
 COPY ./StochasticBarrierFunctions /StochasticBarrierFunctions
 RUN chmod +x /StochasticBarrierFunctions/run_sos.bash
 WORKDIR /StochasticBarrierFunctions
