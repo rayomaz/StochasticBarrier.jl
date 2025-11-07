@@ -1,43 +1,43 @@
 # ==============================================
-# Dockerfile.ProTECT
+# Dockerfile.protect.custom
+# Clone PRoTECT, add experiments and Mosek license
 # ==============================================
 
-FROM python:3.10-slim
-
-# --- System dependencies ---
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        git curl findutils sed build-essential && \
-    rm -rf /var/lib/apt/lists/*
+FROM ubuntu:22.04
 
 # --- Set working directory ---
 WORKDIR /app
 
+# --- System dependencies ---
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip git curl nano unzip findutils sed build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
 # --- Clone PRoTECT repository ---
 RUN git clone --depth 1 https://github.com/Kiguli/PRoTECT.git
 
-# --- Copy local experiments into PRoTECT ---
+# --- Copy local experiments ---
 COPY protect_benchmarks/experiments/ /app/PRoTECT/experiments/
 
-# --- Copy your run script ---
+# --- Copy run script ---
 COPY protect_benchmarks/run_protect.sh /app/PRoTECT/run_protect.sh
 RUN chmod +x /app/PRoTECT/run_protect.sh
 
-# --- Replace solver 'mosek' with 'cvxopt' (optional) ---
-RUN find /app/PRoTECT/ex -type f -exec sed -i 's/mosek/cvxopt/g' {} +
+# --- Copy Mosek license ---
+RUN mkdir -p /app/PRoTECT/protect_benchmarks/mosek
+COPY protect_benchmarks/mosek/mosek.lic /app/PRoTECT/protect_benchmarks/mosek/mosek.lic
+RUN chmod 644 /app/PRoTECT/protect_benchmarks/mosek/mosek.lic
+ENV MOSEKLM_LICENSE_FILE=/app/PRoTECT/protect_benchmarks/mosek/mosek.lic
 
-# --- Install Python dependencies ---
-RUN pip install --no-cache-dir -r /app/PRoTECT/requirements.txt && \
-    pip install --no-cache-dir pyyaml cvxopt numpy scipy matplotlib
+# --- Install PRoTECT Python dependencies ---
+RUN pip3 install --no-cache-dir -r /app/PRoTECT/requirements.txt && \
+    pip3 install --no-cache-dir numpy scipy matplotlib cvxopt pyyaml mosek
 
-# --- Add convenient alias for running PRoTECT experiments ---
+# --- Alias ---
 RUN echo "alias protectbench='/app/PRoTECT/run_protect.sh'" >> ~/.bashrc
 
 # --- Set PYTHONPATH for PRoTECT imports ---
-ENV PYTHONPATH="/app/PRoTECT/src:$PYTHONPATH"
+ENV PYTHONPATH="/app/PRoTECT/src"
 
 # --- Default working directory ---
 WORKDIR /app/PRoTECT
-
-# --- Default entrypoint: start bash shell ---
-CMD ["bash"]
