@@ -77,3 +77,6 @@ octave-workspace
 
 # Text files
 *.txt
+
+# License files
+*.lic
