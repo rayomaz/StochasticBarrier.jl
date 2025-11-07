@@ -1,0 +1,1 @@
+Place mosek.lic in this folder!
