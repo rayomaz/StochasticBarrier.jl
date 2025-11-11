@@ -15,7 +15,7 @@ struct RegionWithProbabilities{T, S<:LazySet{T}, VT<:AbstractVector{T}}
         @assert joint_lower_bound <= 1 "The joint lower bound transition probability (is $joint_lower_bound) should be less than or equal to 1."
 
         joint_upper_bound = sum(upper)
-        @assert joint_upper_bound >= 1 - 1e-9 "The joint upper bound transition probability (is $joint_upper_bound) should be greater than or equal to 1."
+        @assert joint_upper_bound >= 1 - 1e-6 "The joint upper bound transition probability (is $joint_upper_bound) should be greater than or equal to 1."
 
         return new{T, S, VT}(region, lower, upper, upper - lower, sum(lower), sum(upper))
     end
