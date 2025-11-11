@@ -15,7 +15,7 @@
   },
   "partitioning": {
     "method": "grid",
-    "num_slices": [10, 10, 25, 25]
+    "num_slices": [5, 5, 7, 7]
   },
   "save_path": {
     "transition_prob": "../../data/unicycle/unicycle_transition_prob_{regions}_sigma_{noise}.nc",
