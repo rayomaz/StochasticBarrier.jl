@@ -13,17 +13,12 @@ filename = "../data/nndm/$system_flag/$(number_layers)_layer/dynamics_$number_hy
 dataset = open_dataset(joinpath(@__DIR__, filename))
 Xs = load_dynamics(dataset)
 
-# filename = "models/$system_flag/partition_data_$number_hypercubes.mat"
-# file = matopen(filename)
-# Xs = load_dynamics(file)
-# close(file)
-
 system = AdditiveGaussianUncertainPWASystem(Xs, σ)
 
 initial_region = Hyperrectangle([0.0, 0.0], [0.01, 0.01])
 obstacle_region = EmptySet(2)
 
 # Optimize: baseline 1 (sos)
-@time res_sos = synthesize_barrier(SumOfSquaresAlgorithm(sdp_solver=Mosek.Optimizer), system, initial_region, obstacle_region)
+@time res_sos = synthesize_barrier(SumOfSquaresAlgorithm(), system, initial_region, obstacle_region)
 
 println("Pendulum model verified.")
