@@ -8,8 +8,9 @@ WORKDIR /StochasticBarrierFunctions
 # Precompile Julia package
 RUN julia -e 'using Pkg; Pkg.activate("."); Pkg.instantiate(); Pkg.precompile()'
 
-# Alias to run experiment
-RUN echo 'alias stochasticbarrier="/StochasticBarrierFunctions/run_sos.bash"' >> ~/.bashrc
+# Aliases to run experiments
+RUN echo 'alias stochasticbarrier="/StochasticBarrierFunctions/run_sos.bash"' >> ~/.bashrc \
+    && echo 'alias stochasticpwc="/StochasticBarrierFunctions/run_pwc.bash"' >> ~/.bashrc
 
 # -------------------------------
 # Entrypoint
