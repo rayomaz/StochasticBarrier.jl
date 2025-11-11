@@ -14,9 +14,8 @@ A total of six experiments are included for benchmarking SOS:
 
 A total of four experiments are included for benchmarking PWC:
 1.  **Contraction Map**
-2.  **Quadrotor**
-3.  **Pendulum**
-4.  **Unicycle**
+2.  **Pendulum**
+3.  **Unicycle**
 
 ## Repeat Experiments
 | **`Linux`** | **`Mac OS X`** | **`Windows`** |
