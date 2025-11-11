@@ -18,9 +18,9 @@ yaml_files = [
 
     # ---------------------SOS Comparison Systems---------------------#
     "benchmarks/linear/systems/contraction2/SOS/sos_deg4.yaml",
-    "benchmarks/linear/systems/contraction/SOS/sos_deg8.yaml"
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg20.yaml",
-    # "benchmarks/linear/systems/contraction/SOS/sos_deg30.yaml"
+    "benchmarks/linear/systems/contraction2/SOS/sos_deg8.yaml",
+    "benchmarks/linear/systems/contraction2/SOS/sos_deg20.yaml",
+    "benchmarks/linear/systems/contraction2/SOS/sos_deg30.yaml"
 
 ]
 
