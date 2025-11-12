@@ -1,5 +1,5 @@
 system_flag: "nonlinear"
-dynamics: "bounds/pendulum/dynamics_120.nc"
+filename: "bounds/pendulum/dynamics_120.nc"
 probabilities: False
 dim: 2
 σ: [0.01, 0.01]
