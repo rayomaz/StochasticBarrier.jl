@@ -1,5 +1,5 @@
 system_flag: "nonlinear"
-dynamics: "bounds/pendulum/dynamics_240.nc"
+filename: "bounds/pendulum/dynamics_240.nc"
 dim: 2
 σ: [0.01, 0.01]
 initial_region:
