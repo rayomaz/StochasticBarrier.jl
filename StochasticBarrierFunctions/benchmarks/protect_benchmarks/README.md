@@ -1,7 +1,7 @@
 Read the description below for repeatability of the ProTECT experiments.
 
 ### Docker Image
-The Dockerfile is provided in the local folder: **protect_benchmarks**. Build this docker file to obtain all the required Python dependencies.
+The Dockerfile is provided in the **benchmarks** folder. Build this docker file to obtain all the required Python dependencies.
 ```sh
 sudo docker build -f Dockerfile.protect -t protect-bench .
 ```

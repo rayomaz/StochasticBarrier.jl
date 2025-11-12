@@ -1,6 +1,5 @@
 #!/bin/bash
 # Usage: stochasticbarrier sos
-# Single call runs all SOS and ProTECT experiments
 
 if [ "$1" != "sos" ]; then
     echo "Usage: $0 sos"

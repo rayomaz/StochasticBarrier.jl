@@ -45,7 +45,7 @@ function synthesize_barrier(alg::ConstantGDBarrierAlgorithm, regions::Vector{<:R
             state = gradient_descent_barrier_iteration!(ws, state, regions, p, q, decay(k); time_horizon=time_horizon)
         end
 
-        η = maximum(ws.B_init)
+        η = isempty(ws.B_init) ? 0.0 : maximum(ws.B_init)
 
         ivi_value_assignment!(ws, regions, p, q)
         βⱼ = beta!(ws, p)

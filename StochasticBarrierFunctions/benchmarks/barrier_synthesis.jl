@@ -60,7 +60,7 @@ end
 
 function extract_system_parms(config, system_type_str::NONLINEAR)
     dim, σ =  config["dim"], config["σ"]
-    filename = "nonlinear/$(config["filename"])"
+    filename = joinpath("benchmarks", "nonlinear", config["filename"])
     dataset = open_dataset(filename)
     Xs = load_dynamics(dataset)
     return dim, σ, Xs
@@ -161,23 +161,43 @@ function call_barrier_method(config, system_type_instance, ::PWC)
             probabilities = load_probabilities(dataset)
         else
             probability_bounds = transition_probabilities(system, state_partitions)
-            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true) 
+    
+            # Ensure parent directory exists before writing
+            mkpath(dirname(filename))
+            println("→ Saving new probabilities to: ", filename)
+
+            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true)
+
+            # Reopen after saving
             probabilities = load_probabilities(open_dataset(joinpath(@__DIR__, filename)))
         end
 
     elseif system_type_instance == NONLINEAR()
-        filename = "$(config["system_flag"])/data/$(config["probabilities"])"
+        # Construct target NetCDF filename (relative to project root)
+        filename = joinpath("benchmarks", config["system_flag"], "data", config["probabilities"])
+    
+        println("→ Full probability file path: ", filename)
+        println("→ File exists? ", isfile(filename))
+    
         if isfile(filename)
             dim = config["dim"]
-            dataset = open_dataset(joinpath(@__DIR__, filename))
+            dataset = open_dataset(filename)
             probabilities = load_probabilities(dataset)
         else
             dim, σ, Xs = extract_system_parms(config, system_type_instance::NONLINEAR)
             system = AdditiveGaussianUncertainPWASystem(Xs, σ)
             probability_bounds = transition_probabilities(system)
-            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true) 
-            probabilities = load_probabilities(open_dataset(joinpath(@__DIR__, filename)))
+    
+            # Ensure parent directory exists before writing
+            mkpath(dirname(filename))
+            println("→ Saving new probabilities to: ", filename)
+    
+            savedataset(probability_bounds; path=filename, driver=:netcdf, overwrite=true)
+    
+            # Reopen after saving
+            probabilities = load_probabilities(open_dataset(filename))
         end
+    
     else
         error("Unsupported system type instance: $system_type_instance")
     end

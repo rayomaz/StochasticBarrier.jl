@@ -1,0 +1,10 @@
+system_flag: "nonlinear"
+filename: "bounds/unicycle/dynamics_1250.nc"
+dim: 4
+σ: [0.01, 0.01, 0.01, 0.01]
+initial_region:
+  low: [-0.01, -0.01, -0.01, -0.01]
+  high: [0.01, 0.01, 0.01, 0.01]
+barrier_settings:
+  barrier_type: "SOS"
+  barrier_degree: 4
