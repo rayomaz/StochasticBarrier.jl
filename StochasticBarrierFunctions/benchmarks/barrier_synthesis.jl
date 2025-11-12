@@ -60,7 +60,7 @@ end
 
 function extract_system_parms(config, system_type_str::NONLINEAR)
     dim, σ =  config["dim"], config["σ"]
-    filename = "nonlinear/$(config["filename"])"
+    filename = joinpath("benchmarks", "nonlinear", config["filename"])
     dataset = open_dataset(filename)
     Xs = load_dynamics(dataset)
     return dim, σ, Xs
