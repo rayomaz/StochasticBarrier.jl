@@ -225,7 +225,7 @@ end
 function pwc_optimization_call(config, probabilities, initial_region, obstacle_region, barrier_type::CEGS_ALG)
     # Optimize: method 3 (iterative approach)
     δ, num_iterations, barrier_guided, distribution_guided, time_horizon = get_kwargs(config, barrier_type::CEGS_ALG)
-    @time res_pwc = synthesize_barrier(IterativeUpperBoundAlgorithm(δ = δ, num_iterations = num_iterations, 
+    @time res_pwc = synthesize_barrier(CEGISAlgorithm(δ = δ, num_iterations = num_iterations, 
                                                                     barrier_guided = barrier_guided, 
                                                                     distribution_guided = distribution_guided), 
                                        probabilities, initial_region, obstacle_region; time_horizon = time_horizon)
@@ -260,10 +260,10 @@ function get_kwargs(config, barrier_type::DUAL_ALG)
 end
 
 function get_kwargs(config, barrier_type::CEGS_ALG)
-    δ = get(config["barrier_settings"], "iteration_δ", IterativeUpperBoundAlgorithm().δ)
-    num_iterations = get(config["barrier_settings"], "num_iterations", IterativeUpperBoundAlgorithm().num_iterations)
-    barrier_guided = get(config["barrier_settings"], "barrier_guided", IterativeUpperBoundAlgorithm().barrier_guided)
-    distribution_guided = get(config["barrier_settings"], "distribution_guided", IterativeUpperBoundAlgorithm().distribution_guided)
+    δ = get(config["barrier_settings"], "iteration_δ", CEGISAlgorithm().δ)
+    num_iterations = get(config["barrier_settings"], "num_iterations", CEGISAlgorithm().num_iterations)
+    barrier_guided = get(config["barrier_settings"], "barrier_guided", CEGISAlgorithm().barrier_guided)
+    distribution_guided = get(config["barrier_settings"], "distribution_guided", CEGISAlgorithm().distribution_guided)
     time_horizon = get(config["barrier_settings"], "time_horizon", 1) 
     return δ, num_iterations, barrier_guided, distribution_guided, time_horizon
 end

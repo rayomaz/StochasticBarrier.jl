@@ -1,6 +1,6 @@
-export IterativeUpperBoundAlgorithm, IterativeUpperBoundAlgResult
+export CEGISAlgorithm, IterativeUpperBoundAlgResult
 
-Base.@kwdef struct IterativeUpperBoundAlgorithm <: ConstantBarrierAlgorithm
+Base.@kwdef struct CEGISAlgorithm <: ConstantBarrierAlgorithm
     linear_solver = default_lp_solver()
     δ = 0.025
     num_iterations = 10
@@ -21,7 +21,7 @@ beta(res::IterativeUpperBoundAlgResult) = maximum(res.βs)
 betas(res::IterativeUpperBoundAlgResult) = res.βs
 total_time(res::IterativeUpperBoundAlgResult) = res.synthesis_time
 
-function synthesize_barrier(alg::IterativeUpperBoundAlgorithm, regions::Vector{<:RegionWithProbabilities}, initial_region::LazySet, obstacle_region::LazySet; time_horizon=1)
+function synthesize_barrier(alg::CEGISAlgorithm, regions::Vector{<:RegionWithProbabilities}, initial_region::LazySet, obstacle_region::LazySet; time_horizon=1)
     synthesis_time = @elapsed begin 
         iteration_prob = regions
 
