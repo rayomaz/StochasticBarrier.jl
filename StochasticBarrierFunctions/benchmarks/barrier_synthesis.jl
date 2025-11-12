@@ -161,7 +161,14 @@ function call_barrier_method(config, system_type_instance, ::PWC)
             probabilities = load_probabilities(dataset)
         else
             probability_bounds = transition_probabilities(system, state_partitions)
-            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true) 
+    
+            # Ensure parent directory exists before writing
+            mkpath(dirname(filename))
+            println("→ Saving new probabilities to: ", filename)
+
+            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true)
+
+            # Reopen after saving
             probabilities = load_probabilities(open_dataset(joinpath(@__DIR__, filename)))
         end
 
