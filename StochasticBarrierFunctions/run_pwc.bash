@@ -38,10 +38,10 @@ yaml_files = [
     "benchmarks/linear/systems/contraction2/PWC/GD/contraction_gd_0.09.yaml",
     "benchmarks/linear/systems/contraction2/PWC/GD/contraction_gd_0.08.yaml",
 
-    ---------------------SOS NNDM System---------------------#
+    # ---------------------SOS NNDM System---------------------#
     "benchmarks/nonlinear/systems/pendulum/SOS/sos_120.yaml",
     "benchmarks/nonlinear/systems/pendulum/SOS/sos_240.yaml",
-    "benchmarks/nonlinear/systems/pendulum/SOS/sos_480.yaml,
+    "benchmarks/nonlinear/systems/pendulum/SOS/sos_480.yaml",
 
     # ---------------------PWC NNDM System---------------------#
     "benchmarks/nonlinear/systems/pendulum/PWC/DUAL/pwc_dual_120.yaml",
