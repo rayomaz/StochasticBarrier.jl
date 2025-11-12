@@ -1,0 +1,11 @@
+system_flag: "nonlinear"
+dynamics: "bounds/pendulum/dynamics_120.nc"
+probabilities: False
+dim: 2
+σ: [0.01, 0.01]
+initial_region:
+  low: [0.0, 0.0]
+  high: [0.01, 0.01]
+barrier_settings:
+  barrier_type: "PWC"
+  optimization_type: "DUAL_ALG"

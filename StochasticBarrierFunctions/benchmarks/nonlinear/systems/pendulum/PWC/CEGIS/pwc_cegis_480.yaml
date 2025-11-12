@@ -1,0 +1,11 @@
+system_flag: "nonlinear"
+filename: "bounds/pendulum/dynamics_480.nc"
+probabilities: False
+dim: 2
+σ: [0.01, 0.01]
+initial_region:
+  low: [0.0, 0.0]
+  high: [0.01, 0.01]
+barrier_settings:
+  barrier_type: "PWC"
+  optimization_type: "CEGS_ALG"
