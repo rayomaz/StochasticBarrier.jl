@@ -23,7 +23,7 @@ obstacle_region = EmptySet(4)
 @time res_dual = synthesize_barrier(DualAlgorithm(), probabilities, initial_region, obstacle_region)
 
 # # Optimize: method 3 (iterative approach)
-@time res_it = synthesize_barrier(IterativeUpperBoundAlgorithm(), probabilities, initial_region, obstacle_region)
+@time res_it = synthesize_barrier(CEGISAlgorithm(), probabilities, initial_region, obstacle_region)
 
 # # Optimize: method 4 (project gradient descent approach)
 @time res_pgd = synthesize_barrier(GradientDescentAlgorithm(), probabilities, initial_region, obstacle_region)
