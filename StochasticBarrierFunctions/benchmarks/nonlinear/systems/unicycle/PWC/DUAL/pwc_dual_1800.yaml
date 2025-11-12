@@ -1,6 +1,6 @@
 system_flag: "nonlinear"
 filename: "bounds/unicycle/dynamics_1800.nc"
-probabilities: False
+probabilities: "probabilities_unicycle_1800.nc"
 dim: 4
 σ: [0.01, 0.01, 0.01, 0.01]
 initial_region:

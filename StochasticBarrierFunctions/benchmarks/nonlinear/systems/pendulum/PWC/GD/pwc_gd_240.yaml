@@ -1,6 +1,6 @@
 system_flag: "nonlinear"
 filename: "bounds/pendulum/dynamics_240.nc"
-probabilities: False
+probabilities: "probabilities_pendulum_240.nc"
 dim: 2
 σ: [0.01, 0.01]
 initial_region:
