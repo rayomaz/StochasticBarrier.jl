@@ -96,32 +96,11 @@ function load_probabilities(dataset::YAXArrays.Dataset)
     regions = yaxconvert(DimArray, dataset.regions)
     X̲, X̅ = regions[dir=At("lower")], regions[dir=At("upper")]
 
-    if format == "dense"
-        prob = yaxconvert(DimArray, dataset.prob)
-        P̲, P̅ = prob[dir=At("lower")], prob[dir=At("upper")]
+    if size(X̲, 1) != n || size(X̅, 1) != n
+        throw(ArgumentError("Number of regions in dataset does not match the number of hyperrectangles"))
+    end
 
-        if haskey(dataset.cubes, :prob_unsafe)
-            prob_unsafe = yaxconvert(DimArray, dataset.prob_unsafe)
-            P̲ᵤ, P̅ᵤ = prob_unsafe[dir=At("lower")], prob_unsafe[dir=At("upper")]
-
-            regions = [
-                RegionWithProbabilities(
-                    Hyperrectangle(low=Vector(copy(X̲[region=j].data)), high=Vector(copy(X̅[region=j].data))),
-                    (copy(P̲[from=j].data), copy(P̅[from=j].data)),
-                    (P̲ᵤ[from=j], P̅ᵤ[from=j])   # This are already scalars, no need to copy.
-                )
-                for j in 1:n
-            ]
-        else
-            regions = [
-                RegionWithProbabilities(
-                    Hyperrectangle(low=Vector(copy(X̲[region=j].data)), high=Vector(copy(X̅[region=j].data))),
-                    (copy(P̲[from=j].data), copy(P̅[from=j].data))
-                )
-                for j in 1:n
-            ]
-        end
-    elseif format == "sparse"
+    if format == "sparse"
         @assert dataset.properties["axes"] == ["to", "from"]
 
         lower_values = yaxconvert(DimArray, dataset.lower_values) |> DimensionalData.data |> copy
@@ -189,9 +168,17 @@ function load_dynamics(dataset::YAXArrays.Dataset)
     b = yaxconvert(DimArray, dataset.nominal_dynamics_b)
 
     # Give convenient names
-    X̲, X̅ = regions[dir=At("lower")], regions[dir=At("upper")]
+    X̲, X̅ = permutedims(regions[dir=At("lower")], (:region, :x)), permutedims(regions[dir=At("upper")], (:region, :x))
     A̲, A̅ = permutedims(A[dir=At("lower")], (:region, :y, :x)), permutedims(A[dir=At("upper")], (:region, :y, :x))
-    b̲, b̅ = b[dir=At("lower")], b[dir=At("upper")]
+    b̲, b̅ = permutedims(b[dir=At("lower")], (:region, :y)), permutedims(b[dir=At("upper")], (:region, :y))
+
+    if n != size(X̲, 1) || n != size(X̅, 1)
+        throw(ArgumentError("Number of regions in dataset does not match the number of hyperrectangles"))
+    end
+
+    if n != size(A̲, 1) || n != size(A̅, 1) || n != size(b̲, 1) || n != size(b̅, 1)
+        throw(ArgumentError("Number of regions in dataset does not match the number of dynamics matrices"))
+    end
 
     Xs = [
         UncertainPWARegion(
