@@ -53,13 +53,15 @@ function transition_probabilities(system, Xs; alg=TransitionProbabilityAlgorithm
     return regions
 end
 
-function calculate_sparsity(regions)
-    P̅ = mapreduce(r - r.upper, sparse_hcat, regions)
-    P̲ = mapreduce(r - r.lower, sparse_hcat, regions)
+function calculate_sparsity(regions::Vector{RegionWithProbabilities})
+    # Collect upper and lower probability matrices from each region
+    P̅ = sparse_hcat([r.upper for r in regions]...)
+    P̲ = sparse_hcat([r.lower for r in regions]...)
 
     density = (nnz(P̅) + nnz(P̲)) / (length(P̅) + length(P̲))
     return density, 1 - density
 end
+
 
 function post(system::AdditiveGaussianLinearSystem, Xind)
     (jj, X) = Xind

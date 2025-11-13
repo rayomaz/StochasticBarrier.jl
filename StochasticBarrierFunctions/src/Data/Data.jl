@@ -14,22 +14,27 @@ export create_sparse_probability_dataset
 export generate_partitions
 
 function create_sparse_probability_dataset(regions::Vector{<:RegionWithProbabilities})
-    P̲ = mapreduce(r - r.lower, sparse_hcat, regions)
-    P̅ = mapreduce(r - r.upper, sparse_hcat, regions)
+    # Corrected extraction of lower and upper probability vectors
+    P̲ = mapreduce(r -> r.lower, sparse_hcat, regions)
+    P̅ = mapreduce(r -> r.upper, sparse_hcat, regions)
 
-    regions = map(region, regions)
+    # Extract the actual region geometries
+    region_list = map(r -> r.region, regions)
     
-    n = length(regions)
-    d = (LazySets.dim ∘ first)(regions)
+    n = length(region_list)
+    d = LazySets.dim(first(region_list))
 
+    # Prepare axes and stack lower/upper bounds for the regions
     axlist = (Dim{:region}(1:n), Dim{:dir}(["lower", "upper"]), Dim{:dim}(1:d))
-    l, h = stack(low.(regions); dims=1), stack(high.(regions); dims=1)
-    regions = YAXArray(axlist, stack((l, h); dims=2))  # NOTE: Order of stacking is important here.
-    @assert size(regions) == (n, 2, d)
+    l, h = stack(low.(region_list); dims=1), stack(high.(region_list); dims=1)
+    regions_array = YAXArray(axlist, stack((l, h); dims=2))  # NOTE: Order of stacking is important here.
+    @assert size(regions_array) == (n, 2, d)
 
+    # Axes info
     axlist = (Dim{:to}(1:n + 1), Dim{:from}(1:n))
     axes = collect(map(string ∘ DimensionalData.name, axlist))
 
+    # Convert sparse matrices to YAXArrays
     lower_values = YAXArray((Dim{:val_lower}(1:nnz(P̲)),), nonzeros(P̲))
     lower_row_indices = YAXArray((Dim{:val_lower}(1:nnz(P̲)),), rowvals(P̲))
     lower_col_indices = YAXArray((Dim{:col_lower}(1:length(P̲.colptr)),), P̲.colptr)
@@ -38,9 +43,18 @@ function create_sparse_probability_dataset(regions::Vector{<:RegionWithProbabili
     upper_row_indices = YAXArray((Dim{:val_upper}(1:nnz(P̅)),), rowvals(P̅))
     upper_col_indices = YAXArray((Dim{:col_upper}(1:length(P̅.colptr)),), P̅.colptr)
 
-    ds = YAXArrays.Dataset(regions=regions, lower_values=lower_values, lower_row_indices=lower_row_indices, lower_col_indices=lower_col_indices,
-                                            upper_values=upper_values, upper_row_indices=upper_row_indices, upper_col_indices=upper_col_indices; 
-        properties=Dict("format"=>"sparse", "axes"=>axes, "dim"=>d, "num_regions"=>n))
+    # Build dataset
+    ds = YAXArrays.Dataset(
+        regions=regions_array,
+        lower_values=lower_values,
+        lower_row_indices=lower_row_indices,
+        lower_col_indices=lower_col_indices,
+        upper_values=upper_values,
+        upper_row_indices=upper_row_indices,
+        upper_col_indices=upper_col_indices;
+        properties=Dict("format"=>"sparse", "axes"=>axes, "dim"=>d, "num_regions"=>n)
+    )
+
     return ds
 end
 
