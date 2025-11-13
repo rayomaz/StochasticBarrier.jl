@@ -59,17 +59,20 @@ yaml_files = [
     # ---------------------SOS Hybrid System---------------------#
     "benchmarks/nonlinear/systems/unicycle/SOS/sos_1250.yaml",
     "benchmarks/nonlinear/systems/unicycle/SOS/sos_1800.yaml",
+    "benchmarks/nonlinear/systems/unicycle/SOS/sos_2450.yaml",
 
     # ---------------------PWC Hybrid System---------------------#
     "benchmarks/nonlinear/systems/unicycle/PWC/DUAL/pwc_dual_1250.yaml",
     "benchmarks/nonlinear/systems/unicycle/PWC/DUAL/pwc_dual_1800.yaml",
+    "benchmarks/nonlinear/systems/unicycle/PWC/DUAL/pwc_dual_2450.yaml",
 
     "benchmarks/nonlinear/systems/unicycle/PWC/CEGIS/pwc_cegis_1250.yaml",
     "benchmarks/nonlinear/systems/unicycle/PWC/CEGIS/pwc_cegis_1800.yaml",
+    "benchmarks/nonlinear/systems/unicycle/PWC/CEGIS/pwc_cegis_2450.yaml",
 
     "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_1250.yaml",
-    "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_1800.yaml"
-
+    "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_1800.yaml",
+    "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_2450.yaml"
 
 ]
 
