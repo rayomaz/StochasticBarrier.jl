@@ -160,16 +160,14 @@ function call_barrier_method(config, system_type_instance, ::PWC)
             dataset = open_dataset(joinpath(@__DIR__, filename))
             probabilities = load_probabilities(dataset)
         else
-            probability_bounds = transition_probabilities(system, state_partitions)
+            probabilities = transition_probabilities(system, state_partitions)
+            dataset = create_sparse_probability_dataset(probabilities)
     
             # Ensure parent directory exists before writing
             mkpath(dirname(filename))
             println("→ Saving new probabilities to: ", filename)
 
-            savedataset(probability_bounds; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true)
-
-            # Reopen after saving
-            probabilities = load_probabilities(open_dataset(joinpath(@__DIR__, filename)))
+            savedataset(dataset; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true)
         end
 
     elseif system_type_instance == NONLINEAR()
@@ -186,16 +184,14 @@ function call_barrier_method(config, system_type_instance, ::PWC)
         else
             dim, σ, Xs = extract_system_parms(config, system_type_instance::NONLINEAR)
             system = AdditiveGaussianUncertainPWASystem(Xs, σ)
-            probability_bounds = transition_probabilities(system)
+            probabilities = transition_probabilities(system)
+            dataset = create_sparse_probability_dataset(probabilities)
     
             # Ensure parent directory exists before writing
             mkpath(dirname(filename))
             println("→ Saving new probabilities to: ", filename)
     
-            savedataset(probability_bounds; path=filename, driver=:netcdf, overwrite=true)
-    
-            # Reopen after saving
-            probabilities = load_probabilities(open_dataset(filename))
+            savedataset(dataset; path=filename, driver=:netcdf, overwrite=true)
         end
     
     else

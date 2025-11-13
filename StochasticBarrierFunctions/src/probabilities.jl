@@ -35,32 +35,30 @@ function transition_probabilities(system, Xs; alg=TransitionProbabilityAlgorithm
     number_hypercubes = length(Xs)
 
     # Pre-allocate probability matrices
-    P̲ = Vector{SparseVector{Float64, Int64}}(undef, number_hypercubes)
-    P̅ = Vector{SparseVector{Float64, Int64}}(undef, number_hypercubes)
+    regions = Vector{RegionWithProbabilities}(undef, number_hypercubes)
 
     # Generate
     bar = Progress(number_hypercubes)
     Threads.@threads for jj in eachindex(Xs)
         P̲ⱼ, P̅ⱼ = transition_prob_from_region(system, (jj, Xs[jj]), Xs, safe_set, alg; nσ_search=nσ_search)
 
-        P̲[jj] = P̲ⱼ
-        P̅[jj] = P̅ⱼ
+        regions[jj] = RegionWithProbabilities(Xs[jj], (P̲ⱼ, P̅ⱼ))
         
         next!(bar)
     end
 
-    # Combine into a single matrix
-    P̲ = reduce(sparse_hcat, P̲)
-    P̅ = reduce(sparse_hcat, P̅)
+    density, sparsity = calculate_sparsity(regions)
+    @info "Density of the probability matrix" density sparsity
+
+    return regions
+end
+
+function calculate_sparsity(regions)
+    P̅ = mapreduce(r - r.upper, sparse_hcat, regions)
+    P̲ = mapreduce(r - r.lower, sparse_hcat, regions)
 
     density = (nnz(P̅) + nnz(P̲)) / (length(P̅) + length(P̲))
-    @info "Density of the probability matrix" density sparsity=1-density
-
-    axlist = (Dim{:to}(1:number_hypercubes + 1), Dim{:from}(1:number_hypercubes))
-    P̲, P̅ = DimArray(P̲, axlist), DimArray(P̅, axlist)
-
-    # Return as a YAXArrays dataset
-    return create_sparse_probability_dataset(Xs, P̲, P̅)
+    return density, 1 - density
 end
 
 function post(system::AdditiveGaussianLinearSystem, Xind)

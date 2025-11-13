@@ -10,53 +10,14 @@ using MAT.MAT_v4, MAT.MAT_v5, MAT.MAT_HDF5
 const MatlabFile = Union{MAT_v4.Matlabv4File, MAT_v5.Matlabv5File, MAT_HDF5.MatlabHDF5File}
 
 export load_regions, load_dynamics, load_probabilities
-export create_probability_dataset, create_sparse_probability_dataset
+export create_sparse_probability_dataset
 export generate_partitions
 
-function create_probability_dataset(regions::Vector{<:Hyperrectangle}, P̲::AbstractDimArray, P̅::AbstractDimArray, P̲ᵤ::AbstractDimArray, P̅ᵤ::AbstractDimArray)
-    n = length(regions)
-    d = (LazySets.dim ∘ first)(regions)
+function create_sparse_probability_dataset(regions::Vector{<:RegionWithProbabilities})
+    P̲ = mapreduce(r - r.lower, sparse_hcat, regions)
+    P̅ = mapreduce(r - r.upper, sparse_hcat, regions)
 
-    axlist = (Dim{:region}(1:n), Dim{:dir}(["lower", "upper"]), Dim{:dim}(1:d))
-    l, h = stack(low.(regions); dims=1), stack(high.(regions); dims=1)
-    regions = YAXArray(axlist, stack((l, h); dims=2))  # NOTE: Order of stacking is important here.
-    @assert size(regions) == (n, 2, d)
-
-    axlist = (Dim{:to}(1:n), Dim{:from}(1:n), Dim{:dir}(["lower", "upper"]))
-    order(A) = permutedims(A, (:to, :from))
-    prob = YAXArray(axlist, stack((order(P̲), order(P̅)); dims=3))  # NOTE: Order of stacking is important here.
-    @assert size(prob) == (n, n, 2)
-
-    axlist = (Dim{:from}(1:n), Dim{:dir}(["lower", "upper"]))
-    prob_unsafe = YAXArray(axlist, stack((P̲ᵤ, P̅ᵤ); dims=2))  # NOTE: Order of stacking is important here.
-    @assert size(prob_unsafe) == (n, 2)
-
-    ds = YAXArrays.Dataset(regions=regions, prob=prob, prob_unsafe=prob_unsafe; properties=Dict("format"=>"dense", "dim"=>d, "num_regions"=>n))
-    return ds
-end
-
-function create_probability_dataset(regions::Vector{<:Hyperrectangle}, P̲::AbstractDimArray, P̅::AbstractDimArray)
-    println(typeof(P̲))
-    n = length(regions)
-    d = (LazySets.dim ∘ first)(regions)
-
-    axlist = (Dim{:region}(1:n), Dim{:dir}(["lower", "upper"]), Dim{:dim}(1:d))
-    l, h = stack(low.(regions); dims=1), stack(high.(regions); dims=1)
-    regions = YAXArray(axlist, stack((l, h); dims=2))  # NOTE: Order of stacking is important here.
-    @assert size(regions) == (n, 2, d)
-
-    axlist = (Dim{:to}(1:n + 1), Dim{:from}(1:n), Dim{:dir}(["lower", "upper"]))
-    order(A) = permutedims(A, (:to, :from))
-    prob = YAXArray(axlist, stack((order(P̲), order(P̅)); dims=3))  # NOTE: Order of stacking is important here.
-    @assert size(prob) == (n + 1, n, 2)
-
-    ds = YAXArrays.Dataset(regions=regions, prob=prob; properties=Dict("format"=>"dense", "dim"=>d, "num_regions"=>n))
-    return ds
-end
-
-function create_sparse_probability_dataset(regions::Vector{<:Hyperrectangle},
-    P̲::AbstractDimArray{T, N, D, <:AbstractSparseMatrix},
-    P̅::AbstractDimArray{T, N, D, <:AbstractSparseMatrix}) where {T, N, D}
+    regions = map(region, regions)
     
     n = length(regions)
     d = (LazySets.dim ∘ first)(regions)
@@ -68,10 +29,6 @@ function create_sparse_probability_dataset(regions::Vector{<:Hyperrectangle},
 
     axlist = (Dim{:to}(1:n + 1), Dim{:from}(1:n))
     axes = collect(map(string ∘ DimensionalData.name, axlist))
-
-    order(A) = permutedims(A, (:to, :from))
-    P̲, P̅ = order(P̲), order(P̅)
-    P̲, P̅ = DimensionalData.data(P̲), DimensionalData.data(P̅)
 
     lower_values = YAXArray((Dim{:val_lower}(1:nnz(P̲)),), nonzeros(P̲))
     lower_row_indices = YAXArray((Dim{:val_lower}(1:nnz(P̲)),), rowvals(P̲))
