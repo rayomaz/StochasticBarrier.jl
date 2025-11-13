@@ -70,7 +70,6 @@ yaml_files = [
     "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_1250.yaml",
     "benchmarks/nonlinear/systems/unicycle/PWC/GD/pwc_gd_1800.yaml"
 
-
 ]
 
 # Include the barrier synthesis once

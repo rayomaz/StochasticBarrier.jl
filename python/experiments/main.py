@@ -319,7 +319,7 @@ class Runner:
                 nominal_dynamics_b=nominal_dynamics_b
             ),
             attrs=dict(
-                num_regions=number_hypercubes
+                num_regions=sum(number_hypercubes_array),
             )
         )
 
