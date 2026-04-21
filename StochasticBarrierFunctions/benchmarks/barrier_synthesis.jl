@@ -3,6 +3,8 @@ using DynamicPolynomials
 using YAXArrays, NetCDF, YAML
 using Mosek, MosekTools
 
+include(joinpath(@__DIR__, "results_writer.jl"))
+
 abstract type SystemType end
     struct LINEAR <: SystemType end
     struct POLYNOMIAL <: SystemType end
@@ -44,7 +46,21 @@ function barrier_synthesis(yaml_file::String)
     # Define optimization type and make call
     system_type_instance  = get_system_type(config["system_flag"])
     barrier_type_instance = get_barrier_type(config["barrier_settings"]["barrier_type"])
-    call_barrier_method(config, system_type_instance, barrier_type_instance)
+
+    time_horizon = get(config["barrier_settings"], "time_horizon", 1)
+    try
+        res = call_barrier_method(config, system_type_instance, barrier_type_instance)
+        if res === nothing
+            write_result_row(yaml_file, config; status = "FAILED")
+        else
+            write_result_row(yaml_file, config, res; time_horizon = time_horizon)
+        end
+        return res
+    catch err
+        @error "Experiment failed" yaml_file exception=(err, catch_backtrace())
+        write_result_row(yaml_file, config; status = "FAILED")
+        return nothing
+    end
 end
 
 function extract_system_parms(config, system_type_str::LINEAR)
@@ -242,7 +258,9 @@ function parse_polynomial_string(f, dim)
     # Create the polynomials in each dimension
     global x            # Hack to make meta parsing work
     @polyvar x[1:dim]
-    poly = [sum(eval(Meta.parse(f[i]))) for i in 1:length(f)]
+    poly = [eval(Meta.parse(f[i])) for i in 1:length(f)]
+
+    return poly
 end
 
 function get_kwargs(config, barrier_type::SOS)
