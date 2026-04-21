@@ -3,7 +3,7 @@ clc; clear all;
 
 addpath(fileparts(fileparts(mfilename('fullpath'))));  % for sb_record
 
-deg_list = [4, 6, 8];
+deg_list = [10, 12, 14];
 results = struct('degree', [], 'Bx', [], 'betaval', [], 'gam', [], 'Ps', [], 'time', []);
 
 for kk = 1:length(deg_list)
@@ -34,7 +34,7 @@ end
 
 %% Function definition
 function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
-    alpha = 1; gx = 0.01; N = 10; x0 = [0;0];
+    alpha = 1; gx = 0.1; N = 10; x0 = [0;0];
     
     % declare separate noise variables z1,z2 and x1,x2
     syms z1 z2 x1 x2 betasym gamsym real
@@ -62,13 +62,13 @@ function [Bxpolys, betaval, gam, Ps] = runSOS2D(deg)
     prog = sosineq(prog, sig_o1);
     prog = sosineq(prog, B);
     
-    % unsafe set: outside of the box [1, 9]^2
-    x1c = 5; x1r = 4; x2c = 5; x2r = 4;
+    % unsafe set: outside of the box [1, 10]^2
+    x1c = 5.5; x1r = 4.5; x2c = 5.5; x2r = 4.5;
     prog = sosineq(prog, B - sig_u1*((x1 - x1c)^2 - x1r^2) - 1);
     prog = sosineq(prog, B - sig_u2*((x2 - x2c)^2 - x2r^2) - 1);
     
-    prog = sosineq(prog, -B - sig_o1*(x1 - 2.75)*(3.25 - x1) + gamsym);
-    prog = sosineq(prog, -B - sig_o2*(x2 - 2.75)*(3.25 - x2) + gamsym);
+    prog = sosineq(prog, -B - sig_o1*(x1 - 4.75)*(5.25 - x1) + gamsym);
+    prog = sosineq(prog, -B - sig_o2*(x2 - 4.75)*(5.25 - x2) + gamsym);
     
     prog = sosineq(prog, gamsym);
     prog = sosineq(prog, 1 - gamsym - 1e-6);

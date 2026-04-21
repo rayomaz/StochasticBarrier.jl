@@ -8,10 +8,10 @@ state_space:
   low: [17.0, 17.0, 17.0]
   high: [29.0, 29.0, 29.0]
 initial_region:
-  low: [18.0, 18.0, 18.0]
-  high: [19.0, 19.0, 19.0]
+  low: [21.0, 21.0, 21.0]
+  high: [22.0, 22.0, 22.0]
 barrier_settings:
   barrier_type: "SOS"
   time_horizon: 10
-  barrier_degree: 2
+  barrier_degree: 14
 

@@ -12,8 +12,8 @@ if __name__ == '__main__':
     dim = 3  # dimension of state space
 
     # Initial set
-    L_initial = np.array([18,18,18])
-    U_initial = np.array([19,19,19])
+    L_initial = np.array([21,21,21])
+    U_initial = np.array([22,22,22])
 
     # Unsafe set1
     L_unsafe1 = np.array([16,16,16])
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     }
 
     # ========================= Run for multiple degrees =========================
-    degrees = [2, 4, 6, 8]
+    degrees = [6, 8, 14]
 
     for degree in degrees:
         print("\n>>> Running dt_SS() Room Temperature Model with degree =", degree)

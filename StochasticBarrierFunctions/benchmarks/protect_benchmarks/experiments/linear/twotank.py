@@ -13,24 +13,24 @@ if __name__ == '__main__':
     dim = 2  # dimension of state space
 
     # Initial set
-    L_initial = np.array([2.75, 2.75])
-    U_initial = np.array([3.25, 3.25])
+    L_initial = np.array([4.75, 4.75])
+    U_initial = np.array([5.25, 5.25])
 
     # Unsafe set1
     L_unsafe1 = np.array([0, 0])
-    U_unsafe1 = np.array([1, 10])
+    U_unsafe1 = np.array([1, 11])
 
     # Unsafe set2
     L_unsafe2 = np.array([0, 0])
-    U_unsafe2 = np.array([10, 1])
+    U_unsafe2 = np.array([11, 1])
 
     # Unsafe set3
-    L_unsafe3 = np.array([9, 0])
-    U_unsafe3 = np.array([10, 10])
+    L_unsafe3 = np.array([10, 0])
+    U_unsafe3 = np.array([11, 11])
 
     # Unsafe set4
-    L_unsafe4 = np.array([0, 9])
-    U_unsafe4 = np.array([10, 10])
+    L_unsafe4 = np.array([0, 10])
+    U_unsafe4 = np.array([11, 11])
 
     # Combine unsafe regions
     L_unsafe = np.array([L_unsafe1, L_unsafe2, L_unsafe3, L_unsafe4])
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # ========================= Dynamics =========================
     NoiseType = "normal"
-    sigma = np.array([0.01, 0.01])
+    sigma = np.array([0.1, 0.1])
     mean = np.array([0, 0])
 
     # Dynamics
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     }
 
     # ========================= Run for multiple degrees =========================
-    degrees = [4, 6, 8]
+    degrees = [10, 12, 14]
 
     for degree in degrees:
         print("\n>>> Running dt_SS() Two Tank Model with degree =", degree)

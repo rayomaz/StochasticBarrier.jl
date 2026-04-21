@@ -20,6 +20,7 @@ ENV SB_RESULTS_DIR=/results
 
 # Precompile Julia package
 ENV JULIA_PROJECT='/StochasticBarrierFunctions/benchmarks'
+ENV JULIA_PKG_SERVER=""
 RUN julia --project="$JULIA_PROJECT" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
 
 # Single alias that dispatches based on argument

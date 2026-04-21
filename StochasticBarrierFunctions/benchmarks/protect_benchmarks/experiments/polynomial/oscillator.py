@@ -74,10 +74,10 @@ if __name__ == '__main__':
         't': t,
         'noise_type': NoiseType,
         'optimize': True,
-        'solver': "cvxpy",
+        'solver': "mosek",
         'confidence': None,
         'gam': None,
-        'lam': 1000,
+        'lam': 10,
         'c_val': None,
         'sigma': sigma,
         'mean' : mean,
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     }
 
     # ------------------ Run for multiple degrees -----------------
-    degrees = [6, 8, 12]
+    degrees = [8, 12, 14]
 
     for degree in degrees:
         print("\n>>> Running dt_SS() Oscillator Model with degree =", degree)

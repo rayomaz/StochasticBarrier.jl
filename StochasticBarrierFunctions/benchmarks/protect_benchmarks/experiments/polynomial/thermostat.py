@@ -62,7 +62,7 @@ if __name__ == '__main__':
         't': t,
         'noise_type': NoiseType,
         'optimize': True,
-        'solver': "cvxpy",
+        'solver': "mosek",
         'confidence': None,
         'gam': None,
         'lam': 10,
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     }
 
     # ------------------ Run for multiple degrees -----------------
-    degrees = [2, 4, 6, 8, 12]
+    degrees = [6, 8, 10]
 
     for degree in degrees:
         print("\n>>> Running dt_SS() Thermostat Model with degree =", degree)
