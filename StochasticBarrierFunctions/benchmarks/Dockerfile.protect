@@ -26,11 +26,11 @@ COPY protect_benchmarks/experiments/ /app/PRoTECT/experiments/
 COPY protect_benchmarks/run_protect.sh /app/PRoTECT/run_protect.sh
 RUN chmod +x /app/PRoTECT/run_protect.sh
 
-# --- Copy Mosek license ---
-RUN mkdir -p /app/PRoTECT/mosek
-COPY mosek/mosek.lic /app/PRoTECT/mosek/mosek.lic
-RUN chmod 644 /app/PRoTECT/mosek/mosek.lic
-ENV MOSEKLM_LICENSE_FILE=/app/PRoTECT/mosek/mosek.lic
+# --- Mosek license is expected to be bind-mounted at /mosek/mosek.lic ---
+ENV MOSEKLM_LICENSE_FILE=/mosek/mosek.lic
+
+# --- Benchmark CSVs are written under $SB_RESULTS_DIR (bind-mount /results) ---
+ENV SB_RESULTS_DIR=/results
 
 
 # --- Install PRoTECT Python dependencies ---

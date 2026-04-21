@@ -27,29 +27,51 @@ Read the description below for repeatability of all the experiments.
 All SOS experiments use Mosek as the SDP solver. A valid Mosek license file is therefore required.
 
 # Obtain your license
-Obtain mosek.lic from https://www.mosek.com/
+Obtain `mosek.lic` from https://www.mosek.com/; Mosek provides free academic licenses. 
 
-# Paste the license
-Paste the file into the folder
-- StochasticBarrierFunctions/benchmarks/mosek/
+# Place the license
+Put the file at
+- `StochasticBarrierFunctions/benchmarks/mosek/mosek.lic`
+
+The license is bind-mounted into the docker container at runtime (see the `docker run` command below).
 
 ### Docker Image
-The Dockerfile is provided in the main folder. Build this docker file to obtain all the required Julia packages, as specified in the Project.toml. To build the docker image, navigate into the main folder and run the following command 
+A pre-built image tarball is distributed alongside this repository. Load it with
 ```sh
-sudo docker build -t stochastic_barrier .
+sudo docker load -i stochastic_barrier.tar
 ```
 
-To start a container 
+If you prefer to build it yourself the `Dockerfile` at the repository root is still available: `sudo docker build -t stochastic_barrier .`.
+
+To start a container that writes benchmark CSVs back to the host, bind-mount both the Mosek license and a results directory:
 
 ```sh
-sudo docker run --rm -it --name StochasticBarrier stochastic_barrier
+mkdir -p results
+sudo docker run --rm -it --name StochasticBarrier \
+    -v "$(pwd)/StochasticBarrierFunctions/benchmarks/mosek/mosek.lic:/mosek/mosek.lic:ro" \
+    -v "$(pwd)/results:/results" \
+    stochastic_barrier
 ```
+
+Inside the container `MOSEKLM_LICENSE_FILE=/mosek/mosek.lic` and `SB_RESULTS_DIR=/results` are pre-set; the benchmarks will append CSV rows to `/results/julia_results.csv`.
 
 ## Run through bash
 
-Use the following commands to run the benchmarks.
+Inside the container, use:
 
 ```sh
 stochasticbarrier sos                  # To run the SOS barrier benchmark
 stochasticbarrier pwc                  # To run the PWC barrier benchmark
 ```
+
+## Parse results into Table 3 / Table 4
+
+After running StochasticBarrier.jl (Julia), PRoTECT (Python) and StochasticBarrierFunc. (MATLAB) benchmarks, run the parser on the host to produce the paper's two summary tables:
+
+```sh
+julia --project=StochasticBarrierFunctions/benchmarks \
+    StochasticBarrierFunctions/benchmarks/parse_results.jl results
+```
+The above command requires Julia with only stdlibs installed.
+
+The command reads `results/{julia,protect,sostools}_results.csv` and writes `results/table3.csv` and `results/table4.csv` (wide format matching the tables in the paper; missing rows are reported as `OM`). 

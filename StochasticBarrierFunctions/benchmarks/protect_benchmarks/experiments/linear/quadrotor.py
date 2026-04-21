@@ -2,11 +2,11 @@
 # Linear 6D system test (adapted from room temperature model)
 # ===============================================================
 
-import time
 import sympy as sp
 import numpy as np
 
 from src.functions.dt_SS import dt_SS
+from experiments._record import record
 
 if __name__ == '__main__':
     # ------------------ System dimensions ------------------
@@ -115,12 +115,11 @@ if __name__ == '__main__':
     degrees = [2]
 
     for degree in degrees:
-        start = time.time()
         print("\n>>> Running dt_SS() Quadrotor Model with degree =", degree)
-        result = dt_SS(degree, **fixed_params)
-        end = time.time()
-        print("Elapsed time:", end - start)
-
+        result = record(dt_SS,
+                        system="6D Quadrotor",
+                        cls="Linear", table=3, degree=degree,
+                        **fixed_params)
         if not result:
             print("Results dictionary is empty.")
         else:

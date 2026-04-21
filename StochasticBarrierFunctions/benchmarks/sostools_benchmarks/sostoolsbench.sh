@@ -18,6 +18,7 @@ if [ ! -d "SDPT3" ]; then
 else
     echo "SDPT3 already exists — skipping clone."
 fi
+# TODO: Update to automatically install MOSEK instead
 
 # === Run MATLAB setup ===
 echo "------------------------------------------------------------"

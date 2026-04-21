@@ -1,26 +1,35 @@
 %% SOS Two Tank
 clc; clear all;
 
+addpath(fileparts(fileparts(mfilename('fullpath'))));  % for sb_record
+
 deg_list = [4, 6, 8];
 results = struct('degree', [], 'Bx', [], 'betaval', [], 'gam', [], 'Ps', [], 'time', []);
 
 for kk = 1:length(deg_list)
     deg = deg_list(kk);
-    
-    % Start timer for this experiment
+
     tic
-    [Bxpolys, betaval, gam, Ps] = runSOS2D(deg);
-    elapsedTime = toc;
-    
-    results(kk).degree = deg;
-    results(kk).Bx = Bxpolys;
-    results(kk).betaval = betaval;
-    results(kk).gam = gam;
-    results(kk).Ps = Ps;
-    results(kk).time = elapsedTime;
-    
-    fprintf('Degree: %d, gam = %.4f, betaval = %.4f, Ps = %.4f, time = %.2f s\n', ...
-        deg, gam, betaval, Ps, elapsedTime);
+    try
+        [Bxpolys, betaval, gam, Ps] = runSOS2D(deg);
+        elapsedTime = toc;
+
+        results(kk).degree = deg;
+        results(kk).Bx = Bxpolys;
+        results(kk).betaval = betaval;
+        results(kk).gam = gam;
+        results(kk).Ps = Ps;
+        results(kk).time = elapsedTime;
+
+        fprintf('Degree: %d, gam = %.4f, betaval = %.4f, Ps = %.4f, time = %.2f s\n', ...
+            deg, gam, betaval, Ps, elapsedTime);
+
+        sb_record('2D Two Tank', 'Linear', 3, deg, elapsedTime, gam, betaval, Ps, 'OK');
+    catch ME
+        elapsedTime = toc;
+        fprintf(2, 'Degree %d failed: %s\n', deg, ME.message);
+        sb_record('2D Two Tank', 'Linear', 3, deg, elapsedTime, 0, 0, 0, 'FAILED');
+    end
 end
 
 %% Function definition

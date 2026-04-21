@@ -7,12 +7,16 @@ RUN apt-get update && \
 
 # --- StochasticBarrier.jl setup ---
 COPY ./StochasticBarrierFunctions /StochasticBarrierFunctions
+# Drop any host-side mosek.lic: the license must be mounted at runtime.
+RUN rm -f /StochasticBarrierFunctions/benchmarks/mosek/mosek.lic
 RUN chmod +x /StochasticBarrierFunctions/run_sos.bash \
     && chmod +x /StochasticBarrierFunctions/run_pwc.bash
 WORKDIR /StochasticBarrierFunctions
 
-# Mosek license path
-ENV MOSEKLM_LICENSE_FILE=/StochasticBarrierFunctions/benchmarks/mosek/mosek.lic
+# Mosek license is expected to be bind-mounted at /mosek/mosek.lic.
+# Benchmark CSVs are written under $SB_RESULTS_DIR (bind-mount /results).
+ENV MOSEKLM_LICENSE_FILE=/mosek/mosek.lic
+ENV SB_RESULTS_DIR=/results
 
 # Precompile Julia package
 ENV JULIA_PROJECT='/StochasticBarrierFunctions/benchmarks'
