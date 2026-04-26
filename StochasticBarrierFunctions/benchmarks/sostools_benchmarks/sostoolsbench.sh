@@ -2,7 +2,7 @@
 set -e
 
 echo "------------------------------------------------------------"
-echo "Setting up SOSTOOLS and SDPT3 environment"
+echo "Setting up SOSTOOLS with MOSEK"
 echo "------------------------------------------------------------"
 
 # === Clone SOSTOOLS ===
@@ -12,21 +12,45 @@ else
     echo "SOSTOOLS already exists — skipping clone."
 fi
 
-# === Clone SDPT3 ===
-if [ ! -d "SDPT3" ]; then
-    git clone https://github.com/sqlp/sdpt3.git SDPT3
+# === Download MOSEK ===
+if [ ! -d "mosek" ]; then
+    echo "------------------------------------------------------------"
+    echo "Downloading MOSEK"
+    echo "------------------------------------------------------------"
+
+    wget https://download.mosek.com/stable/10.1.21/mosektoolslinux64x86.tar.bz2
+    tar -xjf mosektoolslinux64x86.tar.bz2
 else
-    echo "SDPT3 already exists — skipping clone."
+    echo "MOSEK already exists — skipping download."
 fi
-# TODO: Update to automatically install MOSEK instead
 
-# === Run MATLAB setup ===
+# === Copy MOSEK license ===
 echo "------------------------------------------------------------"
-echo "Installing SOSTOOLS and SDPT3"
+echo "Copying MOSEK license"
 echo "------------------------------------------------------------"
-matlab -batch "addpath('SOSTOOLS'); addsostools; addpath('SDPT3'); install_sdpt3; savepath; exit"
 
-# === Run all benchmark experiments ===
+mkdir -p mosek
+cp -f ../mosek/mosek.lic mosek/mosek.lic
+
+# === MATLAB setup ===
+echo "------------------------------------------------------------"
+echo "Configuring MATLAB"
+echo "------------------------------------------------------------"
+
+matlab -nodisplay -nosplash -nodesktop <<'EOF'
+addpath('SOSTOOLS');
+addsostools;
+
+addpath(genpath('mosek'));
+
+disp('Checking MOSEK...');
+mosekopt('version')
+
+savepath;
+exit
+EOF
+
+# === Run benchmarks ===
 echo "------------------------------------------------------------"
 echo "Running SOSTOOLS Benchmarks"
 echo "------------------------------------------------------------"
@@ -42,10 +66,21 @@ for EXP in "${EXPERIMENTS[@]}"; do
     echo "------------------------------------------------------------"
     echo "Running experiment: $EXP"
     echo "------------------------------------------------------------"
-    matlab -batch "run('$EXP'); exit"
+
+    matlab -nodisplay -nosplash -nodesktop <<EOF
+addpath('SOSTOOLS');
+addpath(genpath('mosek'));
+
+solver_opt = sosoptions;
+solver_opt.solver = 'mosek';
+
+run('$EXP');
+exit
+EOF
+
 done
 
 echo ""
 echo "------------------------------------------------------------"
-echo "All SOSTOOLS benchmarks completed."
+echo "All SOSTOOLS benchmarks completed with MOSEK."
 echo "------------------------------------------------------------"
