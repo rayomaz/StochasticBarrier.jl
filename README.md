@@ -36,7 +36,7 @@ Put the file at
 The license is bind-mounted into the docker container at runtime (see the `docker run` command below).
 
 ### Docker Image
-A pre-built image tarball is distributed alongside this repository. Load it with
+A pre-built image tarball is distributed alongside this repository, available at [Zenodo](https://zenodo.org/records/19669873). Load it with
 ```sh
 sudo docker load -i stochastic_barrier.tar
 ```
