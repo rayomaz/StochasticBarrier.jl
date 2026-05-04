@@ -171,32 +171,32 @@ function call_barrier_method(config, system_type_instance, ::PWC)
         system = AdditiveGaussianLinearSystem(A, b, σ)
         state_partitions = generate_partitions(state_space, ϵ)
 
-        filename = "$(config["system_flag"])/data/$(dim)D_probability_data_$(length(state_partitions))_δ_$(ϵ)_sigma_$σ.nc"
+        path = joinpath(@__DIR__, config["system_flag"], "data", "$(dim)D_probability_data_$(length(state_partitions))_δ_$(ϵ)_sigma_$σ.nc")
         transition_probalities_path = config["transition_probalities"]["transition_probalities_path"]
-        if isfile(filename) || isfile(transition_probalities_path )
-            dataset = open_dataset(joinpath(@__DIR__, filename))
+        if isfile(path) || isfile(transition_probalities_path)
+            dataset = open_dataset(path)
             probabilities = load_probabilities(dataset)
         else
             probabilities = transition_probabilities(system, state_partitions)
             dataset = create_sparse_probability_dataset(probabilities)
     
             # Ensure parent directory exists before writing
-            mkpath(dirname(filename))
-            println("→ Saving new probabilities to: ", filename)
+            mkpath(dirname(path))
+            println("→ Saving new probabilities to: ", path)
 
-            savedataset(dataset; path=joinpath(@__DIR__, filename), driver=:netcdf, overwrite=true)
+            savedataset(dataset; path=path, driver=:netcdf, overwrite=true)
         end
 
     elseif system_type_instance == NONLINEAR()
         # Construct target NetCDF filename (relative to project root)
-        filename = joinpath("benchmarks", config["system_flag"], "data", config["probabilities"])
-    
-        println("→ Full probability file path: ", filename)
-        println("→ File exists? ", isfile(filename))
-    
-        if isfile(filename)
+        path = joinpath(@__DIR__, config["system_flag"], "data", config["probabilities"])
+
+        println("→ Full probability file path: ", path)
+        println("→ File exists? ", isfile(path))
+
+        if isfile(path)
             dim = config["dim"]
-            dataset = open_dataset(filename)
+            dataset = open_dataset(path)
             probabilities = load_probabilities(dataset)
         else
             dim, σ, Xs = extract_system_parms(config, system_type_instance::NONLINEAR)
@@ -205,10 +205,10 @@ function call_barrier_method(config, system_type_instance, ::PWC)
             dataset = create_sparse_probability_dataset(probabilities)
     
             # Ensure parent directory exists before writing
-            mkpath(dirname(filename))
-            println("→ Saving new probabilities to: ", filename)
+            mkpath(dirname(path))
+            println("→ Saving new probabilities to: ", path)
     
-            savedataset(dataset; path=filename, driver=:netcdf, overwrite=true)
+            savedataset(dataset; path=path, driver=:netcdf, overwrite=true)
         end
     
     else
