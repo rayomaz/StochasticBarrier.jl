@@ -1,6 +1,6 @@
 # StochasticBarrier.jl
 
-We present *StochasticBarrier.jl*, an open-source Julia-based toolbox for generating Stochastic Barrier Functions (SBFs) for safety verification of discrete-time stochastic systems with additive Gaussian noise. The tool supports linear, polynomial, and piecewise affine (PWA) uncertain dynamics. The toolbox implements a Sum-of-Squares (SOS) optimization approach, as well as  methods based on piecewise constant (PWC) functions. For the class of of PWC-SBFs, three engines are offered based on: (1) DUAL Linear Programming, (2) Counter Example Guided (CEGS) Linear Programming, and (3) Projected Gradient Descent (GD).
+We present *StochasticBarrier.jl*, an open-source Julia-based toolbox for generating Stochastic Barrier Functions (SBFs) for safety verification of discrete-time stochastic systems with additive Gaussian noise. The tool supports linear, polynomial, and piecewise affine (PWA) uncertain dynamics. The toolbox implements a Sum-of-Squares (SOS) optimization approach, as well as methods based on piecewise constant (PWC) functions. For the class of PWC-SBFs, three engines are offered based on: (1) DUAL Linear Programming, (2) Counter Example Guided (CEGS) Linear Programming, and (3) Projected Gradient Descent (GD).
 
 ## Purpose of this code
 This code generates results of the benchmarks presented in Table (1) and Table (2) of the toolbox paper.
